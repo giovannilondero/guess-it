@@ -29,7 +29,7 @@ class GameViewModel : ViewModel() {
     // The list of words - the front of the list is the next word to guess
     private lateinit var wordList: MutableList<String>
 
-    private var timer: CountDownTimer
+    private val timer: CountDownTimer
 
     companion object {
         // These represent different important times
@@ -40,7 +40,7 @@ class GameViewModel : ViewModel() {
         const val ONE_SECOND = 1000L
 
         // This is the total time of the game
-        const val COUNTDOWN_TIME = 60000L
+        const val COUNTDOWN_TIME = 10000L
     }
 
     init {
@@ -54,11 +54,12 @@ class GameViewModel : ViewModel() {
         timer = object : CountDownTimer(COUNTDOWN_TIME, ONE_SECOND) {
 
             override fun onTick(millisUntilFinished: Long) {
-                _currentTime.value = millisUntilFinished
+                _currentTime.value = millisUntilFinished / ONE_SECOND
             }
 
             override fun onFinish() {
-                onGameFinish()
+                _currentTime.value = DONE
+                _eventGameFinish.value = true
             }
         }
 
@@ -122,10 +123,6 @@ class GameViewModel : ViewModel() {
     fun onCorrect() {
         _score.value = _score.value?.plus(1)
         nextWord()
-    }
-
-    private fun onGameFinish() {
-        _eventGameFinish.value = true
     }
 
     fun onGameFinishComplete() {
